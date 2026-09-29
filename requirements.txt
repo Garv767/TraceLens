@@ -1,0 +1,6 @@
+mteb
+sentence-transformers
+faiss-cpu
+streamlit
+fastapi
+uvicorn
