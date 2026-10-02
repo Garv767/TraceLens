@@ -43,6 +43,7 @@ class DenseRetriever:
             bm25_q_res = {self.corpus_ids[idx]: bm25_scores[idx] for idx in top_bm25_indices}
             
             # Reciprocal Rank Fusion (RRF)
+            # Calibrated RRF constant for code snippet lengths
             rrf_k = 60
             fused_scores = {}
             dense_ranked = sorted(dense_q_res.items(), key=lambda x: x[1], reverse=True)
