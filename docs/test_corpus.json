@@ -1,0 +1,68 @@
+{
+  "doc_bfs": {
+    "text": "def bfs(graph, start):\n    queue = [start]\n    visited = set([start])\n    while queue:\n        node = queue.pop(0)\n        for neighbor in graph[node]:\n            if neighbor not in visited:\n                visited.add(neighbor)\n                queue.append(neighbor)"
+  },
+  "doc_dfs": {
+    "text": "def dfs(graph, node, visited=None):\n    if visited is None:\n        visited = set()\n    visited.add(node)\n    for neighbor in graph[node]:\n        if neighbor not in visited:\n            dfs(graph, neighbor, visited)\n    return visited"
+  },
+  "doc_dijkstra": {
+    "text": "import heapq\n\ndef dijkstra(graph, start):\n    \"\"\"Find shortest path from start node in a weighted graph using priority queue.\"\"\"\n    distances = {node: float('infinity') for node in graph}\n    distances[start] = 0\n    queue = [(0, start)]\n    while queue:\n        current_distance, current_node = heapq.heappop(queue)\n        if current_distance > distances[current_node]:\n            continue\n        for neighbor, weight in graph[current_node].items():\n            distance = current_distance + weight\n            if distance < distances[neighbor]:\n                distances[neighbor] = distance\n                heapq.heappush(queue, (distance, neighbor))\n    return distances"
+  },
+  "doc_bellman_ford": {
+    "text": "def bellman_ford(vertices, edges, source):\n    \"\"\"Find shortest paths handling negative weight edges and detecting negative cycles.\"\"\"\n    distance = {v: float('inf') for v in vertices}\n    distance[source] = 0\n    for _ in range(len(vertices) - 1):\n        for u, v, w in edges:\n            if distance[u] != float('inf') and distance[u] + w < distance[v]:\n                distance[v] = distance[u] + w\n    for u, v, w in edges:\n        if distance[u] != float('inf') and distance[u] + w < distance[v]:\n            raise ValueError('Graph contains negative weight cycle')\n    return distance"
+  },
+  "doc_topological_sort": {
+    "text": "from collections import deque\n\ndef kahn_topological_sort(num_courses, prerequisites):\n    \"\"\"Kahn algorithm for topological sorting of DAG using in-degrees.\"\"\"\n    in_degree = [0] * num_courses\n    adj = {i: [] for i in range(num_courses)}\n    for dest, src in prerequisites:\n        adj[src].append(dest)\n        in_degree[dest] += 1\n    queue = deque([i for i in range(num_courses) if in_degree[i] == 0])\n    order = []\n    while queue:\n        node = queue.popleft()\n        order.append(node)\n        for neighbor in adj[node]:\n            in_degree[neighbor] -= 1\n            if in_degree[neighbor] == 0:\n                queue.append(neighbor)\n    return order if len(order) == num_courses else []"
+  },
+  "doc_union_find": {
+    "text": "class UnionFind:\n    \"\"\"Disjoint Set Union (DSU) with path compression and rank optimization for connected components.\"\"\"\n    def __init__(self, size):\n        self.parent = list(range(size))\n        self.rank = [0] * size\n    def find(self, x):\n        if self.parent[x] != x:\n            self.parent[x] = self.find(self.parent[x])\n        return self.parent[x]\n    def union(self, x, y):\n        root_x = self.find(x)\n        root_y = self.find(y)\n        if root_x == root_y:\n            return False\n        if self.rank[root_x] < self.rank[root_y]:\n            self.parent[root_x] = root_y\n        else:\n            self.parent[root_y] = root_x\n            if self.rank[root_x] == self.rank[root_y]:\n                self.rank[root_x] += 1\n        return True"
+  },
+  "doc_knapsack_01_dp": {
+    "text": "def knapsack_01(weights, values, capacity):\n    \"\"\"Classical 0/1 knapsack dynamic programming problem.\"\"\"\n    n = len(weights)\n    dp = [[0 for _ in range(capacity + 1)] for _ in range(n + 1)]\n    for i in range(1, n + 1):\n        for w in range(1, capacity + 1):\n            if weights[i-1] <= w:\n                dp[i][w] = max(values[i-1] + dp[i-1][w - weights[i-1]], dp[i-1][w])\n            else:\n                dp[i][w] = dp[i-1][w]\n    return dp[n][capacity]"
+  },
+  "doc_max_points_array_dp": {
+    "text": "def max_points_array(nums):\n    \"\"\"Find maximum points collected from an array using dynamic programming (House Robber / Non-adjacent elements).\"\"\"\n    if not nums: return 0\n    if len(nums) == 1: return nums[0]\n    dp = [0] * len(nums)\n    dp[0] = nums[0]\n    dp[1] = max(nums[0], nums[1])\n    for i in range(2, len(nums)):\n        dp[i] = max(dp[i-1], dp[i-2] + nums[i])\n    return dp[-1]"
+  },
+  "doc_longest_increasing_subsequence": {
+    "text": "import bisect\n\ndef length_of_lis(nums):\n    \"\"\"Find length of longest increasing subsequence using patience sorting and binary search in O(N log N).\"\"\"\n    tails = []\n    for x in nums:\n        idx = bisect.bisect_left(tails, x)\n        if idx == len(tails):\n            tails.append(x)\n        else:\n            tails[idx] = x\n    return len(tails)"
+  },
+  "doc_coin_change_dp": {
+    "text": "def coin_change_min_coins(coins, amount):\n    \"\"\"Find minimum number of coins needed to make up given amount using bottom-up dynamic programming.\"\"\"\n    dp = [float('inf')] * (amount + 1)\n    dp[0] = 0\n    for coin in coins:\n        for x in range(coin, amount + 1):\n            dp[x] = min(dp[x], dp[x - coin] + 1)\n    return dp[amount] if dp[amount] != float('inf') else -1"
+  },
+  "doc_longest_common_subsequence": {
+    "text": "def longest_common_subsequence(text1, text2):\n    \"\"\"2D DP solution for finding longest common subsequence between two strings.\"\"\"\n    m, n = len(text1), len(text2)\n    dp = [[0] * (n + 1) for _ in range(m + 1)]\n    for i in range(1, m + 1):\n        for j in range(1, n + 1):\n            if text1[i-1] == text2[j-1]:\n                dp[i][j] = 1 + dp[i-1][j-1]\n            else:\n                dp[i][j] = max(dp[i-1][j], dp[i][j-1])\n    return dp[m][n]"
+  },
+  "doc_edit_distance": {
+    "text": "def min_edit_distance(word1, word2):\n    \"\"\"Levenshtein distance: minimum operations (insert, delete, replace) to convert word1 to word2.\"\"\"\n    m, n = len(word1), len(word2)\n    dp = [[0] * (n + 1) for _ in range(m + 1)]\n    for i in range(m + 1): dp[i][0] = i\n    for j in range(n + 1): dp[0][j] = j\n    for i in range(1, m + 1):\n        for j in range(1, n + 1):\n            if word1[i-1] == word2[j-1]:\n                dp[i][j] = dp[i-1][j-1]\n            else:\n                dp[i][j] = 1 + min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1])\n    return dp[m][n]"
+  },
+  "doc_binary_search": {
+    "text": "def binary_search(arr, target):\n    \"\"\"Standard binary search on sorted array.\"\"\"\n    low, high = 0, len(arr) - 1\n    while low <= high:\n        mid = (low + high) // 2\n        if arr[mid] == target:\n            return mid\n        elif arr[mid] < target:\n            low = mid + 1\n        else:\n            high = mid - 1\n    return -1"
+  },
+  "doc_rotated_sorted_array": {
+    "text": "def search_rotated_sorted_array(nums, target):\n    \"\"\"Search for target value in a circularly rotated sorted array in O(log n).\"\"\"\n    low, high = 0, len(nums) - 1\n    while low <= high:\n        mid = (low + high) // 2\n        if nums[mid] == target: return mid\n        if nums[low] <= nums[mid]:\n            if nums[low] <= target < nums[mid]:\n                high = mid - 1\n            else:\n                low = mid + 1\n        else:\n            if nums[mid] < target <= nums[high]:\n                low = mid + 1\n            else:\n                high = mid - 1\n    return -1"
+  },
+  "doc_sliding_window_max_sum": {
+    "text": "def max_sum_subarray(arr, k):\n    \"\"\"Find maximum sum of contiguous subarray of fixed size k using sliding window.\"\"\"\n    if len(arr) < k: return -1\n    window_sum = sum(arr[:k])\n    max_sum = window_sum\n    for i in range(len(arr) - k):\n        window_sum = window_sum - arr[i] + arr[i + k]\n        max_sum = max(max_sum, window_sum)\n    return max_sum"
+  },
+  "doc_longest_substring_without_repeating": {
+    "text": "def length_of_longest_substring(s):\n    \"\"\"Find length of longest substring without repeating characters using sliding window and hash map.\"\"\"\n    char_index = {}\n    left = 0\n    max_length = 0\n    for right, ch in enumerate(s):\n        if ch in char_index and char_index[ch] >= left:\n            left = char_index[ch] + 1\n        char_index[ch] = right\n        max_length = max(max_length, right - left + 1)\n    return max_length"
+  },
+  "doc_two_pointers_two_sum": {
+    "text": "def two_sum_sorted(numbers, target):\n    \"\"\"Find two numbers in a sorted array that sum to target using two pointers.\"\"\"\n    left, right = 0, len(numbers) - 1\n    while left < right:\n        curr_sum = numbers[left] + numbers[right]\n        if curr_sum == target:\n            return [left + 1, right + 1]\n        elif curr_sum < target:\n            left += 1\n        else:\n            right -= 1\n    return []"
+  },
+  "doc_trapping_rain_water": {
+    "text": "def trap_rain_water(height):\n    \"\"\"Calculate trapped water between elevation map heights using two pointers in O(n) time and O(1) space.\"\"\"\n    if not height: return 0\n    left, right = 0, len(height) - 1\n    left_max, right_max = height[left], height[right]\n    total_water = 0\n    while left < right:\n        if left_max < right_max:\n            left += 1\n            left_max = max(left_max, height[left])\n            total_water += left_max - height[left]\n        else:\n            right -= 1\n            right_max = max(right_max, height[right])\n            total_water += right_max - height[right]\n    return total_water"
+  },
+  "doc_quick_select": {
+    "text": "import random\n\ndef find_kth_largest(nums, k):\n    \"\"\"Quickselect algorithm to find kth largest element in unsorted array in average O(n) time.\"\"\"\n    target_idx = len(nums) - k\n    def select(left, right):\n        pivot_idx = random.randint(left, right)\n        pivot = nums[pivot_idx]\n        nums[pivot_idx], nums[right] = nums[right], nums[pivot_idx]\n        store_idx = left\n        for i in range(left, right):\n            if nums[i] < pivot:\n                nums[store_idx], nums[i] = nums[i], nums[store_idx]\n                store_idx += 1\n        nums[right], nums[store_idx] = nums[store_idx], nums[right]\n        if store_idx == target_idx:\n            return nums[store_idx]\n        elif store_idx < target_idx:\n            return select(store_idx + 1, right)\n        else:\n            return select(left, store_idx - 1)\n    return select(0, len(nums) - 1)"
+  },
+  "doc_trie_prefix_tree": {
+    "text": "class TrieNode:\n    def __init__(self):\n        self.children = {}\n        self.is_end_of_word = False\n\nclass Trie:\n    \"\"\"Prefix tree implementation supporting word insertion, exact search, and prefix search.\"\"\"\n    def __init__(self):\n        self.root = TrieNode()\n    def insert(self, word):\n        curr = self.root\n        for ch in word:\n            if ch not in curr.children:\n                curr.children[ch] = TrieNode()\n            curr = curr.children[ch]\n        curr.is_end_of_word = True\n    def starts_with(self, prefix):\n        curr = self.root\n        for ch in prefix:\n            if ch not in curr.children: return False\n            curr = curr.children[ch]\n        return True"
+  },
+  "doc_segment_tree": {
+    "text": "class SegmentTree:\n    \"\"\"Segment tree for range sum queries and point updates in O(log n).\"\"\"\n    def __init__(self, nums):\n        self.n = len(nums)\n        self.tree = [0] * (4 * self.n)\n        if self.n > 0:\n            self._build(nums, 0, 0, self.n - 1)\n    def _build(self, nums, node, start, end):\n        if start == end:\n            self.tree[node] = nums[start]\n            return\n        mid = (start + end) // 2\n        self._build(nums, 2 * node + 1, start, mid)\n        self._build(nums, 2 * node + 2, mid + 1, end)\n        self.tree[node] = self.tree[2 * node + 1] + self.tree[2 * node + 2]\n    def query(self, l, r, node=0, start=0, end=None):\n        if end is None: end = self.n - 1\n        if r < start or end < l: return 0\n        if l <= start and end <= r: return self.tree[node]\n        mid = (start + end) // 2\n        return self.query(l, r, 2 * node + 1, start, mid) + self.query(l, r, 2 * node + 2, mid + 1, end)"
+  },
+  "doc_backtracking_subsets": {
+    "text": "def subsets_power_set(nums):\n    \"\"\"Generate all subsets (power set) of a collection of distinct integers using backtracking.\"\"\"\n    result = []\n    def backtrack(start, current_subset):\n        result.append(list(current_subset))\n        for i in range(start, len(nums)):\n            current_subset.append(nums[i])\n            backtrack(i + 1, current_subset)\n            current_subset.pop()\n    backtrack(0, [])\n    return result"
+  }
+}
