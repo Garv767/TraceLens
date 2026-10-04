@@ -1,7 +1,9 @@
 import json
 import mteb
-from tracelens.retrieval.pipeline import PrePostPipelineEncoder
+import sys
 import os
+sys.path.insert(0, os.path.abspath('src'))
+from tracelens.retrieval.pipeline import PrePostPipelineEncoder
 
 def main():
     model = PrePostPipelineEncoder("BAAI/bge-small-en-v1.5")
